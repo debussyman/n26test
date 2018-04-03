@@ -42,7 +42,7 @@ public class TransactionsController {
         DateTime transactionTime = new DateTime(transaction.timestamp);
 
         if (transactionTime.isAfter(DateTime.now().minusSeconds(SECONDS_WINDOW))) {
-            for (int i=0; i<60; i++) {
+            for (int i=0; i<SECONDS_WINDOW; i++) {
                 SecondBucket bucket = bucketForTimestamp(transactionTime.plusSeconds(i));
                 bucket.updateBucket(transactionTime, transaction.amount);
             }
