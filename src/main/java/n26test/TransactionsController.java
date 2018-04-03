@@ -48,7 +48,7 @@ public class TransactionsController {
             }
             response.setStatus(HttpServletResponse.SC_CREATED);
         } else {
-            logger.info("transaction is more than 60 seconds in the past - {}", transactionTime);
+            logger.info("transaction is more than {} seconds in the past - {}", SECONDS_WINDOW, transactionTime);
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
