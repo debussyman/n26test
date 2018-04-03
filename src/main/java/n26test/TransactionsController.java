@@ -19,6 +19,7 @@ import static java.lang.Math.toIntExact;
 @RestController
 public class TransactionsController {
 
+    public static final int SECONDS_WINDOW = 60;
     private List<SecondBucket> buckets;
     private final Logger logger = LoggerFactory.getLogger(TransactionsController.class);
 
@@ -27,7 +28,7 @@ public class TransactionsController {
         Supplier<SecondBucket> supplier = SecondBucket::new;
         buckets = Stream
                 .generate(supplier)
-                .limit(119)
+                .limit(2 * SECONDS_WINDOW - 1)
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +41,7 @@ public class TransactionsController {
     public void postTransaction(@RequestBody final Transaction transaction, HttpServletResponse response) {
         DateTime transactionTime = new DateTime(transaction.timestamp);
 
-        if (transactionTime.isAfter(DateTime.now().minusSeconds(60))) {
+        if (transactionTime.isAfter(DateTime.now().minusSeconds(SECONDS_WINDOW))) {
             for (int i=0; i<60; i++) {
                 SecondBucket bucket = bucketForTimestamp(transactionTime.plusSeconds(i));
                 bucket.updateBucket(transactionTime, transaction.amount);

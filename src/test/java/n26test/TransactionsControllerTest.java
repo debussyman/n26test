@@ -81,7 +81,7 @@ public class TransactionsControllerTest {
 
         Statistic stat = new Statistic();
         transactions.stream()
-                .filter(t -> t.timestamp > DateTime.now().getMillis() - 60000)
+                .filter(t -> t.timestamp > DateTime.now().getMillis() - TransactionsController.SECONDS_WINDOW * 1000)
                 .forEach(t -> {
                     stat.incrementCount();
                     stat.incrementSum(t.amount);

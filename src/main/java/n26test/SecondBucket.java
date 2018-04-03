@@ -14,7 +14,7 @@ public class SecondBucket {
     }
 
     private void resetIfStale(DateTime newTimestamp) {
-        if (timestamp.isBefore(DateTime.now().minusSeconds(60)) &&
+        if (timestamp.isBefore(DateTime.now().minusSeconds(TransactionsController.SECONDS_WINDOW)) &&
                 newTimestamp.isAfter(timestamp)) {
             timestamp = newTimestamp;
             statistic = new Statistic();
