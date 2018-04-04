@@ -4,18 +4,21 @@ import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
 
+import static java.lang.Math.toIntExact;
+
 public class SecondBucket {
     private Statistic statistic;
-    private DateTime timestamp;
+    private int secondFromEpoch;
 
     public SecondBucket() {
         statistic = new Statistic();
-        timestamp = new DateTime(0);
+        secondFromEpoch = 0;
     }
 
     private void resetIfStale(DateTime newTimestamp) {
-        if (timestamp.isBefore(DateTime.now().minusSeconds(TransactionsController.SECONDS_WINDOW))) {
-            timestamp = newTimestamp;
+        int second = secondFromTimestamp(newTimestamp);
+        if (secondFromEpoch != second) {
+            secondFromEpoch = second;
             statistic = new Statistic();
         }
     }
@@ -32,6 +35,10 @@ public class SecondBucket {
     public Statistic getStatistic(DateTime timestamp) {
         resetIfStale(timestamp);
         return this.statistic;
+    }
+
+    private int secondFromTimestamp(DateTime timestamp) {
+        return toIntExact(timestamp.getMillis() / 1000);
     }
 }
 

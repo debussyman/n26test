@@ -4,9 +4,9 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -44,7 +44,7 @@ public class TransactionsController {
         if (transactionTime.isAfter(DateTime.now().minusSeconds(SECONDS_WINDOW))) {
             for (int i=0; i<SECONDS_WINDOW; i++) {
                 SecondBucket bucket = bucketForTimestamp(transactionTime.plusSeconds(i));
-                bucket.updateBucket(transactionTime, transaction.amount);
+                bucket.updateBucket(transactionTime.plusSeconds(i), transaction.amount);
             }
             response.setStatus(HttpServletResponse.SC_CREATED);
         } else {
@@ -62,7 +62,7 @@ public class TransactionsController {
     }
 
     private SecondBucket bucketForTimestamp(DateTime timestamp) {
-        int offset = toIntExact((timestamp.getMillis() / 1000)) % buckets.size();
+        int offset = toIntExact(timestamp.getMillis() / 1000) % buckets.size();
         return buckets.get(offset);
     }
 
